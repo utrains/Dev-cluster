@@ -2,7 +2,7 @@
 # Manage participant access to the shared cluster. Each person gets a
 # ServiceAccount + revocable token, read-only access cluster-wide, and a
 # personal sandbox namespace they can write to (see rbac/ and the README
-# section "Shared cluster access").
+# section "Give teammates access (RBAC)").
 #
 # Run this as the cluster admin -- the person who ran setup.sh, whose kubectl
 # already points at the cluster.
@@ -14,7 +14,7 @@
 #   users.sh list                               show users, sandboxes and their quota usage
 #
 # For 50+ people, don't create one user each: run `add class --readonly` once
-# and give everyone the same file (see README "Shared cluster access").
+# and give everyone the same file (see README "Give teammates access (RBAC)").
 #
 # Names are lowercase letters, digits and '-' (max 40): they become part of
 # Kubernetes object names.

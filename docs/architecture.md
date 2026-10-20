@@ -10,9 +10,7 @@ AWS Load Balancer Controller watches one `Ingress` resource per app and
 provisions a single shared Application Load Balancer (ALB) that routes
 traffic to all five apps by hostname.
 
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/a8b3a9b1-92ce-4961-b67c-67bc188b6562" />
-
-
+![Lab architecture](images/architecture.svg)
 
 ## Compute: Amazon EKS
 
@@ -47,7 +45,7 @@ token, created by `scripts/users.sh` from `rbac/`.
   reason: they create billable or externally reachable AWS resources.
 - **Not addressed:** there is no NetworkPolicy (the VPC CNI's policy
   enforcement isn't enabled by this repo), and the EKS API endpoint is public.
-  The model assumes trusted participants. See "Optional: share your cluster with teammates" in the README.
+  The model assumes trusted participants. See "Give teammates access (RBAC)" in the README.
 
 The existing `dev-cluster-eks-admin-role` in `terraform/eks.tf` is unchanged and
 remains the administrator path.

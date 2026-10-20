@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 770" width="1220" height="770" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>K8s Assistant Lab architecture</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3B4252"/>
+    </marker>
+    <style>
+      .box   { fill: #ffffff; stroke: #9AA5B1; stroke-width: 1.2; }
+      .title { font-size: 13px; font-weight: 600; fill: #1F2933; }
+      .sub   { font-size: 10.5px; fill: #52606D; }
+      .zone  { font-size: 13px; font-weight: 600; }
+      .lbl   { font-size: 11px; fill: #3B4252; }
+      .line  { fill: none; stroke: #3B4252; stroke-width: 1.4; }
+      .dash  { fill: none; stroke: #3B4252; stroke-width: 1.2; stroke-dasharray: 5 4; }
+    </style>
+  </defs>
+
+  <rect width="1220" height="770" fill="#ffffff"/>
+
+  <!-- People -->
+  <rect class="box" x="20" y="170" width="180" height="60" rx="8"/>
+  <text class="title" x="110" y="195" text-anchor="middle">App users</text>
+  <text class="sub" x="110" y="213" text-anchor="middle">browser · https://&lt;app&gt;.&lt;domain&gt;</text>
+
+  <rect class="box" x="20" y="290" width="180" height="60" rx="8" style="stroke:#8C4FFF"/>
+  <text class="title" x="110" y="315" text-anchor="middle">Route 53</text>
+  <text class="sub" x="110" y="333" text-anchor="middle">public hosted zone</text>
+
+  <rect class="box" x="20" y="452" width="180" height="60" rx="8"/>
+  <text class="title" x="110" y="477" text-anchor="middle">Lab admin</text>
+  <text class="sub" x="110" y="495" text-anchor="middle">AWS credentials (IAM)</text>
+
+  <rect class="box" x="20" y="540" width="180" height="60" rx="8"/>
+  <text class="title" x="110" y="565" text-anchor="middle">Teammates</text>
+  <text class="sub" x="110" y="583" text-anchor="middle">kubeconfig file, no AWS account</text>
+
+  <!-- AWS cloud -->
+  <rect x="230" y="20" width="975" height="730" rx="10" fill="none" stroke="#232F3E" stroke-width="1.4" stroke-dasharray="7 5"/>
+  <text class="zone" x="248" y="44" fill="#232F3E">AWS Cloud</text>
+
+  <rect class="box" x="700" y="36" width="170" height="56" rx="8" style="stroke:#DD344C"/>
+  <text class="title" x="785" y="59" text-anchor="middle">ACM</text>
+  <text class="sub" x="785" y="77" text-anchor="middle">*.&lt;domain&gt; certificate</text>
+
+  <rect class="box" x="1010" y="36" width="180" height="56" rx="8" style="stroke:#ED7100"/>
+  <text class="title" x="1100" y="59" text-anchor="middle">Amazon ECR</text>
+  <text class="sub" x="1100" y="77" text-anchor="middle">10 images (frontend + backend)</text>
+
+  <!-- VPC -->
+  <rect x="250" y="110" width="940" height="625" rx="10" fill="none" stroke="#3F8624" stroke-width="1.4"/>
+  <text class="zone" x="266" y="132" fill="#3F8624">VPC</text>
+
+  <rect x="270" y="150" width="200" height="270" rx="8" fill="#EEF6EA" stroke="#7AA116"/>
+  <text class="zone" x="284" y="170" fill="#3F8624">Public subnets</text>
+
+  <rect class="box" x="285" y="180" width="170" height="82" rx="8" style="stroke:#8C4FFF"/>
+  <text class="title" x="370" y="204" text-anchor="middle">Application Load</text>
+  <text class="title" x="370" y="220" text-anchor="middle">Balancer</text>
+  <text class="sub" x="370" y="240" text-anchor="middle">one ALB for all five apps</text>
+  <text class="sub" x="370" y="254" text-anchor="middle">HTTPS :443</text>
+
+  <rect class="box" x="285" y="330" width="170" height="60" rx="8"/>
+  <text class="title" x="370" y="355" text-anchor="middle">NAT Gateway</text>
+  <text class="sub" x="370" y="373" text-anchor="middle">outbound traffic for nodes</text>
+
+  <rect x="490" y="150" width="690" height="570" rx="8" fill="#EEF5FA" stroke="#5B9BD5"/>
+  <text class="zone" x="1166" y="170" fill="#2E6DA4" text-anchor="end">Private subnets</text>
+
+  <!-- EKS cluster -->
+  <rect x="505" y="175" width="665" height="375" rx="8" fill="#FFF8F0" stroke="#ED7100" stroke-width="1.4"/>
+  <text class="zone" x="520" y="194" fill="#B35900">EKS cluster · dev-cluster · managed node group (t3.medium)</text>
+
+  <rect class="box" x="520" y="202" width="315" height="40" rx="6"/>
+  <text class="title" x="534" y="219" style="font-size:12px">kube-system</text>
+  <text class="sub" x="534" y="234">AWS Load Balancer Controller · metrics-server</text>
+
+  <rect class="box" x="845" y="202" width="313" height="40" rx="6"/>
+  <text class="title" x="859" y="219" style="font-size:12px">Ingress per app</text>
+  <text class="sub" x="859" y="234">host &lt;app&gt;.&lt;domain&gt; → frontend Service</text>
+
+  <!-- ALB to the five frontends -->
+  <path class="line" d="M455,221 H497 V250 H1097"/>
+  <path class="line" d="M581,250 V261" marker-end="url(#arrow)"/>
+  <path class="line" d="M710,250 V261" marker-end="url(#arrow)"/>
+  <path class="line" d="M839,250 V261" marker-end="url(#arrow)"/>
+  <path class="line" d="M968,250 V261" marker-end="url(#arrow)"/>
+  <path class="line" d="M1097,250 V261" marker-end="url(#arrow)"/>
+
+  <!-- Namespaces -->
+  <g transform="translate(520,262)">
+    <rect x="0" y="0" width="122" height="172" rx="8" fill="#ffffff" stroke="#8C4FFF"/>
+    <text class="title" x="61" y="20" text-anchor="middle" style="font-size:12px">ecommerce</text>
+    <rect x="10" y="32" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="51" text-anchor="middle" style="font-size:12px">Frontend</text>
+    <text class="sub" x="61" y="68" text-anchor="middle">React · nginx</text>
+    <path class="line" d="M61,78 V97" marker-end="url(#arrow)"/>
+    <rect x="10" y="98" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="117" text-anchor="middle" style="font-size:12px">Backend</text>
+    <text class="sub" x="61" y="134" text-anchor="middle">Node.js · Express</text>
+  </g>
+  <g transform="translate(649,262)">
+    <rect x="0" y="0" width="122" height="172" rx="8" fill="#ffffff" stroke="#8C4FFF"/>
+    <text class="title" x="61" y="20" text-anchor="middle" style="font-size:12px">banking</text>
+    <rect x="10" y="32" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="51" text-anchor="middle" style="font-size:12px">Frontend</text>
+    <text class="sub" x="61" y="68" text-anchor="middle">React · nginx</text>
+    <path class="line" d="M61,78 V97" marker-end="url(#arrow)"/>
+    <rect x="10" y="98" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="117" text-anchor="middle" style="font-size:12px">Backend</text>
+    <text class="sub" x="61" y="134" text-anchor="middle">Node.js · Express</text>
+  </g>
+  <g transform="translate(778,262)">
+    <rect x="0" y="0" width="122" height="172" rx="8" fill="#ffffff" stroke="#8C4FFF"/>
+    <text class="title" x="61" y="20" text-anchor="middle" style="font-size:12px">food-delivery</text>
+    <rect x="10" y="32" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="51" text-anchor="middle" style="font-size:12px">Frontend</text>
+    <text class="sub" x="61" y="68" text-anchor="middle">React · nginx</text>
+    <path class="line" d="M61,78 V97" marker-end="url(#arrow)"/>
+    <rect x="10" y="98" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="117" text-anchor="middle" style="font-size:12px">Backend</text>
+    <text class="sub" x="61" y="134" text-anchor="middle">Node.js · Express</text>
+    <text class="sub" x="61" y="162" text-anchor="middle">+ Redis cache</text>
+  </g>
+  <g transform="translate(907,262)">
+    <rect x="0" y="0" width="122" height="172" rx="8" fill="#ffffff" stroke="#8C4FFF"/>
+    <text class="title" x="61" y="20" text-anchor="middle" style="font-size:12px">student-portal</text>
+    <rect x="10" y="32" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="51" text-anchor="middle" style="font-size:12px">Frontend</text>
+    <text class="sub" x="61" y="68" text-anchor="middle">React · nginx</text>
+    <path class="line" d="M61,78 V97" marker-end="url(#arrow)"/>
+    <rect x="10" y="98" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="117" text-anchor="middle" style="font-size:12px">Backend</text>
+    <text class="sub" x="61" y="134" text-anchor="middle">Node.js · Express</text>
+  </g>
+  <g transform="translate(1036,262)">
+    <rect x="0" y="0" width="122" height="172" rx="8" fill="#ffffff" stroke="#8C4FFF"/>
+    <text class="title" x="61" y="20" text-anchor="middle" style="font-size:12px">support-tickets</text>
+    <rect x="10" y="32" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="51" text-anchor="middle" style="font-size:12px">Frontend</text>
+    <text class="sub" x="61" y="68" text-anchor="middle">React · nginx</text>
+    <path class="line" d="M61,78 V97" marker-end="url(#arrow)"/>
+    <rect x="10" y="98" width="102" height="46" rx="6" fill="#F3EEFF" stroke="#C4B5FD"/>
+    <text class="title" x="61" y="117" text-anchor="middle" style="font-size:12px">Backend</text>
+    <text class="sub" x="61" y="134" text-anchor="middle">Node.js · Express</text>
+  </g>
+
+  <!-- Access layer -->
+  <rect class="box" x="520" y="452" width="180" height="78" rx="6" style="stroke:#ED7100"/>
+  <text class="title" x="610" y="478" text-anchor="middle" style="font-size:12px">Kubernetes API</text>
+  <text class="sub" x="610" y="496" text-anchor="middle">public endpoint</text>
+  <text class="sub" x="610" y="512" text-anchor="middle">IAM or token login</text>
+
+  <rect class="box" x="715" y="452" width="220" height="78" rx="6"/>
+  <text class="title" x="825" y="478" text-anchor="middle" style="font-size:12px">lab-users</text>
+  <text class="sub" x="825" y="496" text-anchor="middle">a ServiceAccount + token per person</text>
+  <text class="sub" x="825" y="512" text-anchor="middle">read-only everywhere, no Secrets</text>
+
+  <rect class="box" x="950" y="452" width="208" height="78" rx="6"/>
+  <text class="title" x="1054" y="478" text-anchor="middle" style="font-size:12px">sandbox-&lt;name&gt;</text>
+  <text class="sub" x="1054" y="496" text-anchor="middle">personal namespace</text>
+  <text class="sub" x="1054" y="512" text-anchor="middle">write access, about 5 small pods</text>
+
+  <!-- RDS -->
+  <rect class="box" x="505" y="590" width="665" height="105" rx="8" style="stroke:#2E73B8;stroke-width:1.4"/>
+  <text class="title" x="837" y="622" text-anchor="middle">Amazon RDS for PostgreSQL 17</text>
+  <text class="sub" x="837" y="643" text-anchor="middle" style="font-size:11.5px">one shared instance · one database and user per app</text>
+  <text class="sub" x="837" y="662" text-anchor="middle" style="font-size:11.5px">port 5432 open to the cluster security group only</text>
+  <text class="sub" x="837" y="681" text-anchor="middle" style="font-size:11.5px">credentials stored as Kubernetes Secrets</text>
+
+  <!-- Flows -->
+  <path class="line" d="M110,230 V289" marker-end="url(#arrow)"/>
+  <text class="lbl" x="118" y="265">DNS lookup</text>
+
+  <path class="line" d="M200,200 H284" marker-end="url(#arrow)"/>
+  <text class="lbl" x="214" y="192">HTTPS</text>
+
+  <path class="dash" d="M200,320 H250 V244 H284" marker-end="url(#arrow)"/>
+  <text class="lbl" x="207" y="312" style="font-size:10px">alias</text>
+
+  <path class="dash" d="M700,64 H430 V179" marker-end="url(#arrow)"/>
+  <text class="lbl" x="565" y="58" text-anchor="middle">TLS certificate</text>
+
+  <path class="dash" d="M1100,92 V174" marker-end="url(#arrow)"/>
+  <text class="lbl" x="1108" y="138">image pull</text>
+
+  <path class="line" d="M200,478 H519" marker-end="url(#arrow)"/>
+  <text class="lbl" x="290" y="470">IAM login</text>
+
+  <path class="line" d="M200,570 H480 V510 H519" marker-end="url(#arrow)"/>
+  <text class="lbl" x="290" y="562">token</text>
+
+  <path class="line" d="M837,551 V589" marker-end="url(#arrow)"/>
+  <text class="lbl" x="845" y="575">backends query their own database</text>
+</svg>
