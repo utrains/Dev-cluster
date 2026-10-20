@@ -78,23 +78,7 @@ Setup takes 20 minutes or more. You can safely run it again. If a rollout fails,
 
 ## 4. Use the kubeconfig
 
-When setup finishes, a read-only kubeconfig is ready at:
-
-```text
-kubeconfigs/team-readonly.kubeconfig
-```
-
-It can read everything in the cluster except Secrets, and cannot change anything. To use it, point `kubectl` at the file:
-
-```bash
-export KUBECONFIG=$PWD/kubeconfigs/team-readonly.kubeconfig
-kubectl get pods -A                  # works
-kubectl get secrets -n banking       # Forbidden: read-only
-```
-
-Run `unset KUBECONFIG` to switch back to your own access.
-
-The read-only file contains a login token. Keep it out of Git. The `kubeconfigs/` folder is already gitignored.
+When setup finishes, your read-only kubeconfig is ready at `kubeconfigs/team-readonly.kubeconfig`.
 
 ## 5. Verify the deployment
 
