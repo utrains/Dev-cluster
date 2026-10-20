@@ -78,16 +78,13 @@ Setup takes 20 minutes or more. You can safely run it again. If a rollout fails,
 
 ## 4. Use the kubeconfig
 
-When setup finishes, you have two ways to connect with `kubectl`:
+When setup finishes, a read-only kubeconfig is ready at:
 
-| Kubeconfig | Where | Access |
-|---|---|---|
-| Admin | `~/.kube/config`, configured by `setup.sh` | Full cluster admin, logs in with your AWS credentials |
-| Read-only | `kubeconfigs/team-readonly.kubeconfig`, created by `setup.sh` | Read everything except Secrets, cannot change anything |
+```text
+kubeconfigs/team-readonly.kubeconfig
+```
 
-The admin kubeconfig is already active, so `kubectl` commands work right away.
-
-To use the read-only kubeconfig, point `kubectl` at the file:
+It can read everything in the cluster except Secrets, and cannot change anything. To use it, point `kubectl` at the file:
 
 ```bash
 export KUBECONFIG=$PWD/kubeconfigs/team-readonly.kubeconfig
@@ -95,7 +92,7 @@ kubectl get pods -A                  # works
 kubectl get secrets -n banking       # Forbidden: read-only
 ```
 
-To go back to admin access, run `unset KUBECONFIG`.
+Run `unset KUBECONFIG` to switch back to your own access.
 
 The read-only file contains a login token. Keep it out of Git. The `kubeconfigs/` folder is already gitignored.
 
@@ -145,7 +142,7 @@ To get back to a healthy state:
 - `./scripts/chaos/reset.sh <app>` clears injected latency and other in-app chaos.
 - `bad-deploy.sh` prints the `kubectl` command that reverts it.
 
-The chaos scripts change the cluster, so run them with the admin kubeconfig, not the read-only one.
+The chaos scripts change the cluster, so run them with your own access, not the read-only kubeconfig.
 
 The [runbooks](docs/runbooks/) walk through each fix step by step, and [DevOps STAR scenarios](docs/devops-star-scenarios.md) describes the same incidents as production write-ups.
 
