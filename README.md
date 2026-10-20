@@ -73,9 +73,9 @@ The script:
 7. Creates one database and user per app and stores the credentials as Kubernetes Secrets.
 8. Deploys the five apps and Redis, then waits for every rollout.
 9. Installs metrics-server and the AWS Load Balancer Controller, applies the Ingresses, and creates the DNS records.
-10. Prints the application URLs.
+10. Prints the application URLs and the path of the read-only kubeconfig, `kubeconfigs/team-readonly.kubeconfig`.
 
-Setup takes 20 minutes or more. You can safely run it again. If a rollout fails, the script names the failing Deployment. Fix the cause and re-run.
+When it finishes, the cluster is running and `kubeconfigs/team-readonly.kubeconfig` is ready to use. Setup takes 20 minutes or more. You can safely run it again. If a rollout fails, the script names the failing Deployment. Fix the cause and re-run.
 
 ## 4. Get your kubeconfig
 
@@ -154,20 +154,9 @@ A teammate with a personal file also gets a **`sandbox-<name>`** namespace. Ther
 
 A `Forbidden` error outside the sandbox means the permissions are working as intended.
 
-### Shared read-only file (ready after `terraform apply`)
+### Shared read-only file
 
-Every `terraform apply`, including the one inside `setup.sh`, creates a `team-readonly` identity and writes its kubeconfig to:
-
-```text
-kubeconfigs/team-readonly.kubeconfig
-```
-
-Hand this file to anyone who only needs to look at the cluster. To print its path, run `terraform -chdir=terraform output team_readonly_kubeconfig`. To revoke it, delete the token and re-run `terraform apply` to issue a new one:
-
-```bash
-kubectl -n lab-users delete secret team-readonly-token
-terraform -chdir=terraform apply
-```
+The setup generates `kubeconfigs/team-readonly.kubeconfig` automatically. It has the read-only access described above, and you can hand it to anyone who only needs to look at the cluster.
 
 ### Create a personal kubeconfig for a teammate
 
@@ -188,37 +177,6 @@ The script shows which cluster it is about to change and asks you to confirm. Ad
 4. Tests the file with `kubectl auth can-i` to confirm it has exactly the expected permissions.
 
 Use personal files for small teams (up to about 10 people on the default three nodes). For a large class, a single `--readonly` file avoids filling the cluster with sandboxes.
-
-### What the teammate does with the file
-
-The teammate only needs `kubectl`, with no AWS account or AWS CLI. The examples use `team-readonly.kubeconfig`. For a personal file, use `<name>.kubeconfig` instead.
-
-**1. Save the file** in a `.kube` folder in their home directory, never inside a Git repository:
-
-- Linux, WSL, macOS: `~/.kube/team-readonly.kubeconfig`
-- Windows: `C:\Users\<you>\.kube\team-readonly.kubeconfig`
-
-**2. Point kubectl at it.** This lasts until the terminal is closed, so repeat it in each new terminal:
-
-```bash
-export KUBECONFIG=~/.kube/team-readonly.kubeconfig          # Linux, WSL, macOS
-```
-
-```powershell
-$env:KUBECONFIG = "$HOME\.kube\team-readonly.kubeconfig"    # Windows PowerShell
-```
-
-Or pass it to a single command: `kubectl --kubeconfig ~/.kube/team-readonly.kubeconfig get pods -A`.
-
-**3. Check that it works:**
-
-```bash
-kubectl get nodes                   # lists the nodes: connected
-kubectl get pods -A                 # lists every app's pods
-kubectl get secrets -n banking      # Forbidden: read-only access is working
-```
-
-Send teammates the step-by-step guide [Connecting to a shared lab cluster](docs/connect-to-the-cluster.md) ([PDF](docs/pdf/connect-to-the-cluster.pdf)) together with their file.
 
 ### Keep the files safe
 
