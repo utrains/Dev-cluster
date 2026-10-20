@@ -85,7 +85,7 @@ A kubeconfig is the file `kubectl` reads to find the cluster and log in. There a
 |---|---|---|---|
 | **You** (the person who ran `setup.sh`) | Yes | `setup.sh` sets it up, or run `aws eks update-kubeconfig` | Cluster admin |
 | **Other IAM users in the same AWS account** | Yes | Assume the `dev-cluster-eks-admin-role` | Cluster admin |
-| **Teammates** | No | A file you generate with `./scripts/users.sh` | Read-only, plus an optional personal sandbox ([section 6](#6-give-teammates-access-rbac)) |
+| **Teammates** | No | `kubeconfigs/team-readonly.kubeconfig`, written automatically by `terraform apply`, or a personal file from `./scripts/users.sh` | Read-only, plus an optional personal sandbox ([section 6](#6-give-teammates-access-rbac)) |
 
 **As the admin**, on the machine that ran `setup.sh`, kubectl is already configured. On any other machine, run:
 
@@ -154,9 +154,24 @@ A teammate with a personal file also gets a **`sandbox-<name>`** namespace. Ther
 
 A `Forbidden` error outside the sandbox means the permissions are working as intended.
 
-### Create a kubeconfig for a teammate
+### Shared read-only file (ready after `terraform apply`)
 
-Run these as the admin, from the repository root:
+Every `terraform apply`, including the one inside `setup.sh`, creates a `team-readonly` identity and writes its kubeconfig to:
+
+```text
+kubeconfigs/team-readonly.kubeconfig
+```
+
+Hand this file to anyone who only needs to look at the cluster. To print its path, run `terraform -chdir=terraform output team_readonly_kubeconfig`. To revoke it, delete the token and re-run `terraform apply` to issue a new one:
+
+```bash
+kubectl -n lab-users delete secret team-readonly-token
+terraform -chdir=terraform apply
+```
+
+### Create a personal kubeconfig for a teammate
+
+For a personal file with a sandbox, run these as the admin, from the repository root:
 
 ```bash
 ./scripts/users.sh add alex sam           # one file per person, each with a sandbox
