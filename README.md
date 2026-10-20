@@ -191,19 +191,31 @@ Use personal files for small teams (up to about 10 people on the default three n
 
 ### What the teammate does with the file
 
-The teammate saves the file outside any Git repository, for example as `~/.kube/lab.kubeconfig`, and points kubectl at it:
+The teammate only needs `kubectl`, with no AWS account or AWS CLI. The examples use `team-readonly.kubeconfig`. For a personal file, use `<name>.kubeconfig` instead.
+
+**1. Save the file** in a `.kube` folder in their home directory, never inside a Git repository:
+
+- Linux, WSL, macOS: `~/.kube/team-readonly.kubeconfig`
+- Windows: `C:\Users\<you>\.kube\team-readonly.kubeconfig`
+
+**2. Point kubectl at it.** This lasts until the terminal is closed, so repeat it in each new terminal:
 
 ```bash
-export KUBECONFIG=~/.kube/lab.kubeconfig          # Bash, WSL, macOS
+export KUBECONFIG=~/.kube/team-readonly.kubeconfig          # Linux, WSL, macOS
 ```
 
 ```powershell
-$env:KUBECONFIG = "$HOME\.kube\lab.kubeconfig"    # PowerShell
+$env:KUBECONFIG = "$HOME\.kube\team-readonly.kubeconfig"    # Windows PowerShell
 ```
 
+Or pass it to a single command: `kubectl --kubeconfig ~/.kube/team-readonly.kubeconfig get pods -A`.
+
+**3. Check that it works:**
+
 ```bash
-kubectl get pods -A                 # works
-kubectl get secrets -n banking      # Forbidden, as expected
+kubectl get nodes                   # lists the nodes: connected
+kubectl get pods -A                 # lists every app's pods
+kubectl get secrets -n banking      # Forbidden: read-only access is working
 ```
 
 Send teammates the step-by-step guide [Connecting to a shared lab cluster](docs/connect-to-the-cluster.md) ([PDF](docs/pdf/connect-to-the-cluster.pdf)) together with their file.
