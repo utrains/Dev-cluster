@@ -47,6 +47,11 @@ output "lab_domain" {
   value       = var.dns_zone_name
 }
 
+output "team_readonly_kubeconfig" {
+  description = "Shared read-only kubeconfig for teammates (holds a token: share privately)"
+  value       = abspath(local_sensitive_file.team_readonly_kubeconfig.filename)
+}
+
 output "acm_certificate_arn" {
   description = "ACM certificate ARN for the shared ALB's HTTPS listener, consumed by scripts/setup.sh. Looked up or passed in -- never created here, see acm.tf"
   value       = local.acm_certificate_arn
